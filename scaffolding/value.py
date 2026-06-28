@@ -33,6 +33,9 @@ class Value:
 
         return res
 
+    def __rmul__(self, other):
+        return self * other
+
     def topo_sort(self, visited=None):
         sorted_nodes = []
         if visited is None:
