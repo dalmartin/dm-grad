@@ -8,7 +8,7 @@ class Neuron:
         self.b = Value(random.uniform(-1, 1))
 
     def __call__(self, x):
-        return sum((x*w for x, w in zip(x, self.w)), self.b)
+        return sum((x*w for x, w in zip(x, self.w)), self.b).tanh()
 
     def parameters(self):
         return self.w + [self.b]
@@ -34,17 +34,7 @@ class MLP:
         for layer in self.layers:
             x = layer(x)
 
-        return x
+        return x[0] if len(x) == 1 else x
 
     def parameters(self):
         return [p for layer in self.layers for p in layer.parameters()]
-
-if __name__ == '__main__':
-    x = [2.0, 5.0, 3.5]
-
-    mlp = MLP(3, [4, 4, 1])
-    res = mlp(x)
-    print(res)
-
-
-    print(f"{len(mlp.parameters())} Parameters")

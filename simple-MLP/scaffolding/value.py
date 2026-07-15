@@ -8,7 +8,7 @@ class Value:
         self._label = _label
 
     def __repr__(self):
-        return f"{self._label}\t{self.val}"
+        return f"Value: {self.val}\tGradient: {self.grad}\n"
 
     def __add__(self, other):
         other = other if isinstance(other, Value) else Value(other)
@@ -36,6 +36,17 @@ class Value:
     def __rmul__(self, other):
         return self * other
 
+    def tanh(self):
+        import math
+        t = math.tanh(self.val)
+        res = Value(t, (self,))
+
+        def back():
+            self.grad += (1 - t**2) * res.grad
+        res.back = back
+
+        return res
+
     def topo_sort(self, visited=None):
         sorted_nodes = []
         if visited is None:
@@ -52,18 +63,15 @@ class Value:
         return sorted_nodes
 
     def backward(self):
+        self.grad = 1.0
 
         # Topological sort (recursive sort of elements in order)
         sorted_nodes = self.topo_sort()
 
         #Then run .back() for every element in the sorted order
         sorted_nodes.reverse()
-        print(sorted_nodes)
         for node in sorted_nodes:
             node.back()
-        
-        for node in sorted_nodes:
-            print(node._label, "\t", node.grad)
 
 if __name__ == '__main__':
 
